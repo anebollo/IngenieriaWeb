@@ -17,8 +17,8 @@
 
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -27,14 +27,9 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <script src="js/vue.js"></script>   
-
 </head>
 
 <body id="page-top" class="index">
-
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v9.0" nonce="jQkianHS"></script>
 
     <!-- Navigation -->
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -63,6 +58,9 @@
                         <a href="#nuevo">Añadir contacto</a>
                     </li>
                     <li class="page-scroll">
+                        <a href="#redesSociales">Redes Sociales</a>
+                    </li>
+                    <li class="page-scroll">
                         <a href="#about">Acerca de...</a>
                     </li>
                 </ul>
@@ -86,123 +84,146 @@
             </div>
         </div>
     </header>
-    <div id="appAgendaVue">
+    <div id="agendaVue">
+        <!-- Contactos Grid Section -->
+        <section id="contactos">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h2>Contactos</h2>
+                        <hr class="star-primary">
+                    </div>
+                </div>
+                
+                <div v-if="contacts.length !== 0">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <h4>Nombre</h4>
+                        </div>
+                        <div class="col-xs-4">
+                            <h4>Email</h4>
+                        </div>
+                        <div class="col-xs-3">
+                            <h4>Teléfono</h4>
+                        </div>
+                    </div>
+                
+                    <!-- con el v-for recorremos todos los elementos del modelo (los contactos) y guardo cada elemento
+                    y el indice de cada uno para después eliminarlo en el array de contactos -->
+                    <!-- no hace falta poner :key="index", ya que con el algoritmo propio de vue nos sirve para que 
+                        diferencie los nodos del DOM -->
+                    <div class="row" v-for="item in contacts" v-bind:key="item.id">
+                        <div class="col-xs-4">
+                            <p>{{item.data.name}}</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <p>{{item.data.email}}</p>
+                        </div>
+                        <div class="col-xs-3">
+                            <p>{{item.data.phone}}</p>
+                        </div>
+                        <div class="col-xs-1">
+                            <button class="btn btn-danger btn-sm" @click="eliminarContacto(item.id)">
+                                <span class="glyphicon glyphicon-remove"></span></button>
+                        </div>
+                    </div>
+                </div>
+                <div v-else>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>No se ha encontrado ningún contacto.</p>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </section>
 
-    <!-- Contactos Grid Section -->
-    <section id="contactos">
+        <!-- Añadir nuevo Section -->
+        <section id="nuevo">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h2>Añadir contacto</h2>
+                        <hr class="star-primary">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <form name="sentMessage" id="contactForm" novalidate>
+                            <div class="row control-group">
+                                <div class="form-group col-xs-12 floating-label-form-group controls">
+                                    <label>Nombre</label>
+                                    <!-- hacemos que se asocie lo introducido por el usuario a uno de los campos del objeto que
+                                    se crea en vue -->
+                                    <input type="text" class="form-control" placeholder="Nombre" id="name" 
+                                    v-model="name">
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                            </div>
+                            <div class="row control-group">
+                                <div class="form-group col-xs-12 floating-label-form-group controls">
+                                    <label>Email</label>
+                                    <input type="email" class="form-control" placeholder="Email" id="email"
+                                    v-model="email">
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                            </div>
+                            <div class="row control-group">
+                                <div class="form-group col-xs-12 floating-label-form-group controls">
+                                    <label>Teléfono</label>
+                                    <input type="tel" class="form-control" placeholder="Número de teléfono" id="phone"
+                                    v-model="phone">
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                            </div>
+                            <br>
+                            <div id="success"></div>
+                            <div class="row">
+                                <div class="form-group col-xs-12">
+                                    <!-- en el momento en el que le demos al botón de añadir, se activa el evento
+                                    por click o por enter (con keyup.enter) y comprobamos si los campos son correctos.
+                                    El botón estará deshabilitado hasta que todos los elemento tengan algo escrito dentro -->
+                                    <button type="button" class="btn btn-success btn-lg"
+                                    @click="guardarContacto" @keyup.enter="guardarContacto">Añadir</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    <!-- aquí termina el div de agendaVue -->
+    </div>
+
+    <section id="redesSociales">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2>Contactos</h2>
-                    <hr class="star-primary">
-                </div>
-            </div>
-            <div v-if="contactos.length !== 0">
-	            <div class="row">
-	                <div class="col-xs-4">
-	                    <h4>Nombre</h4>
-	                </div>
-	                <div class="col-xs-4">
-	                    <h4>Email</h4>
-	                </div>
-	                <div class="col-xs-4">
-	                    <h4>Teléfono</h4>
-	                </div>
-	            </div>
-                <div class="row" v-for="(c, index) in contactos" :key="index">
-                    <div class="col-xs-4">
-                        <p>{{ c.nombre }}</p>
-                    </div>
-                    <div class="col-xs-4">
-                        <p> {{ c.email }} </p>
-                    </div>
-                    <div class="col-xs-3"> <!-- antes ponia 4-->
-                        <p> {{ c. telefono }}</p>
-                    </div>
-                    <div class="col-xs-1"> <!-- antes ponia 4-->
-                          <button class="btn btn-danger btn-sm" @click="borrarContacto(index)"><span class="glyphicon glyphicon-remove"></span></button>
-                    </div>
-                </div>
-            </div>
-            <div v-else>
-              <div class="row">
-                  <div class="col-xs-12">
-                      <p>No se ha encontrado ningún contacto.</p>
-                  </div>
-              </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Añadir nuevo Section -->
-    <section id="nuevo">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h2>Añadir contacto</h2>
+                    <h2>Redes Sociales</h2>
                     <hr class="star-primary">
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2">
-                    <form name="sentMessage" id="contactForm" novalidate>
-                        <div class="row control-group">
-                            <div class="form-group col-xs-12 floating-label-form-group controls">
-                                <label>Nombre</label>
-                                <input type="text" class="form-control" placeholder="Nombre" id="name" v-model="nuevoContacto.nombre">
-                                <p class="help-block text-danger"></p>
-                            </div>
-                        </div>
-                        <div class="row control-group">
-                            <div class="form-group col-xs-12 floating-label-form-group controls">
-                                <label>Email</label>
-                                <input type="email" class="form-control" placeholder="Email" id="email" v-model="nuevoContacto.email">
-                                <p class="help-block text-danger"></p>
-                            </div>
-                        </div>
-                        <div class="row control-group">
-                            <div class="form-group col-xs-12 floating-label-form-group controls">
-                                <label>Teléfono</label>
-                                <input type="tel" class="form-control" placeholder="Número de teléfono" id="phone"
-                                v-model="nuevoContacto.telefono">
-                                <p class="help-block text-danger"></p>
-                            </div>
-                        </div>
-                        <br>
-                        <div id="success"></div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <button type="submit" class="btn btn-success btn-lg" @click="guardarContacto" @keyup.enter="guardarContacto" :disabled="nuevoContacto.nombre.length === 0 || nuevoContacto.email.length === 0 || nuevoContacto.telefono.length === 0">Añadir</button>
-                            </div>
-                        </div>
-                    </form>
+                    <div class="form-group col-xs-12" id="followTwitter">
+                        <a href="https://twitter.com/VueAgenda" class="twitter-follow-button" data-show-count="false" > Follow @VueAgenda</a>
+                        <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a>
+                    </div>
+
+                    <div class="fb-like" data-href="https://developers.facebook.com/docs/plugins/" data-width="" data-layout="button_count" data-action="like" data-size="large" data-share="true"></div>
+
+                    <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Hello!</p>&mdash; AgendaVue (@VueAgenda) <a href="https://twitter.com/VueAgenda/status/1344341271784136705?ref_src=twsrc%5Etfw">December 30, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+                    <blockquote class="twitter-tweet"><p lang="es" dir="ltr">Bienvenidos al proyecto Vue!</p>&mdash; AgendaVue (@VueAgenda) <a href="https://twitter.com/VueAgenda/status/1344343430340763651?ref_src=twsrc%5Etfw">December 30, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+                    <div class="fb-post" data-href="https://www.facebook.com/168406826549577/photos/a.560037820719807/829422783781308/" data-width="500" data-show-text="true"><blockquote cite="https://www.facebook.com/168406826549577/photos/a.560037820719807/829422783781308/?type=3" class="fb-xfbml-parse-ignore"><p>&quot;Me gusta&quot;.concat(&quot; &quot;.concat(&#039;JS&#039;));</p>Publicada por <a href="https://www.facebook.com/Javascript-en-Espa&#xf1;ol-168406826549577/">Javascript en Español</a> en&nbsp;<a href="https://www.facebook.com/168406826549577/photos/a.560037820719807/829422783781308/?type=3">Sábado, 10 de enero de 2015</a></blockquote></div>
+
+            
                 </div>
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2">
-                <div class="form-group col-xs-12" id="followTwitter">
-                    <a href="https://twitter.com/VueAgenda" class="twitter-follow-button" data-show-count="false" > Follow @VueAgenda</a>
-                    <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a>
-                </div>
-
-                <div class="fb-like" data-href="https://developers.facebook.com/docs/plugins/" data-width="" data-layout="button_count" data-action="like" data-size="large" data-share="true"></div>
-
-                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Hello!</p>&mdash; AgendaVue (@VueAgenda) <a href="https://twitter.com/VueAgenda/status/1344341271784136705?ref_src=twsrc%5Etfw">December 30, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-                <blockquote class="twitter-tweet"><p lang="es" dir="ltr">Bienvenidos al proyecto Vue!</p>&mdash; AgendaVue (@VueAgenda) <a href="https://twitter.com/VueAgenda/status/1344343430340763651?ref_src=twsrc%5Etfw">December 30, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-                <div class="fb-post" data-href="https://www.facebook.com/168406826549577/photos/a.560037820719807/829422783781308/" data-width="500" data-show-text="true"><blockquote cite="https://www.facebook.com/168406826549577/photos/a.560037820719807/829422783781308/?type=3" class="fb-xfbml-parse-ignore"><p>&quot;Me gusta&quot;.concat(&quot; &quot;.concat(&#039;JS&#039;));</p>Publicada por <a href="https://www.facebook.com/Javascript-en-Espa&#xf1;ol-168406826549577/">Javascript en Español</a> en&nbsp;<a href="https://www.facebook.com/168406826549577/photos/a.560037820719807/829422783781308/?type=3">Sábado, 10 de enero de 2015</a></blockquote></div>
-
-        
-            </div>
-        </div>
-
     </section>
-
-	</div> <!--fin id-->
-
+    
     <!-- About Section -->
     <section class="success" id="about">
         <div class="container">
@@ -244,9 +265,6 @@
         </a>
     </div>
 
-    <!--añadido-->
-    <script src="js/agendaVue.js"></script>
-
     <!-- jQuery -->
     <script src="js/jquery.js"></script>
 
@@ -254,12 +272,75 @@
     <script src="js/bootstrap.min.js"></script>
 
     <!-- Plugin JavaScript -->
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
     <script src="js/classie.js"></script>
     <script src="js/cbpAnimatedHeader.js"></script>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v9.0" nonce="jQkianHS"></script>
 
     <!-- Custom Theme JavaScript -->
     <script src="js/freelancer.js"></script>
+    
+    <!-- Vue -->
+    <script src="js/vue.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/7.17.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.17.2/firebase-firestore.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVbCafY3G7aD_PDBM2qSEkbK5Eie709qg",
+            authDomain: "agendavue-12345.firebaseapp.com",
+            databaseURL: "https://agendavue-12345-default-rtdb.firebaseio.com",
+            projectId: "agendavue-12345",
+            storageBucket: "agendavue-12345.appspot.com",
+            messagingSenderId: "805792123473",
+            appId: "1:805792123473:web:86e985986afbd0e7b74670",
+        
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+    /*   const db = firebase.initializeApp({ projectId: 'pueba-ingenieria-web' }).firestore(); */
+        const colecion = db.collection('users');
+    
+  
+
+        var agendaVue = new Vue({
+            el: '#agendaVue',
+            data:{
+                    /* newContact: { name: '', email: '', phone: ''}, */
+                    name: null, 
+                    email: null, 
+                    phone: null,
+                    contacts:[]
+            },
+
+            mounted(){
+                this.contacts= []
+                colecion.get().then( (r) => r.docs.map( (item) => this.contacts.push({id:item.id, data:item.data()})))
+            },
+
+            methods:{
+                guardarContacto(){
+                    /* con la siguiente línea hacemos que una vez hayamos metido el contacto, se limpie la vista para
+                    el usuario */
+                    colecion.add({
+                        name: this.name,
+                        email: this.email,
+                        phone: this.phone
+                    }).then( ()=> this.$mount())
+                    
+                },
+                eliminarContacto(index){
+                    /* el splice lo que te hace es pillar el elemento que quieras de array y le especificas en el
+                    segundo parámetro cuántos quieres eliminar, en este caso, solo el seleccionado, es decir 1. */
+                    colecion.doc(index).delete().then( () => this.$mount())
+                }
+            }
+        })
+    </script>
 
 </body>
 
