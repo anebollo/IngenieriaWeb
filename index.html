@@ -184,6 +184,7 @@
                                     por click o por enter (con keyup.enter) y comprobamos si los campos son correctos.
                                     El botón estará deshabilitado hasta que todos los elemento tengan algo escrito dentro -->
                                     <button type="button" class="btn btn-success btn-lg"
+                                    :disabled="nombre==null || email==null || telefono==null"
                                     @click="guardarContacto" @keyup.enter="guardarContacto">Añadir</button>
                                 </div>
                             </div>
