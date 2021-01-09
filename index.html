@@ -123,12 +123,9 @@
                             <p>{{item.data.phone}}</p>
                         </div>
                         <div class="col-xs-1">
-                            <button class="btn btn-danger btn-sm" @click="eliminarContacto(item.id)">
+                            <button class="btn btn-danger btn-sm" @click="borrarContacto(item.id)">
                                 <span class="glyphicon glyphicon-remove"></span></button>
                         </div>
-                       
-
-                        
                     </div>
                 </div>
                 <div v-else>
@@ -158,21 +155,24 @@
                                     <label>Nombre</label>
                                     <!-- hacemos que se asocie lo introducido por el usuario a uno de los campos del objeto que
                                     se crea en vue -->
-                                    <input type="text" class="form-control" placeholder="Nombre" id="name" v-model="name">
+                                    <input type="text" class="form-control" placeholder="Nombre" id="name" 
+                                    v-model="name">
                                     <p class="help-block text-danger"></p>
                                 </div>
                             </div>
                             <div class="row control-group">
                                 <div class="form-group col-xs-12 floating-label-form-group controls">
                                     <label>Email</label>
-                                    <input type="email" class="form-control" placeholder="Email" id="email" v-model="email">
+                                    <input type="email" class="form-control" placeholder="Email" id="email"
+                                    v-model="email">
                                     <p class="help-block text-danger"></p>
                                 </div>
                             </div>
                             <div class="row control-group">
                                 <div class="form-group col-xs-12 floating-label-form-group controls">
                                     <label>Teléfono</label>
-                                    <input type="tel" class="form-control" placeholder="Teléfono" id="phone" v-model="phone">
+                                    <input type="tel" class="form-control" placeholder="Número de teléfono" id="phone"
+                                    v-model="phone">
                                     <p class="help-block text-danger"></p>
                                 </div>
                             </div>
@@ -183,8 +183,8 @@
                                     <!-- en el momento en el que le demos al botón de añadir, se activa el evento
                                     por click o por enter (con keyup.enter) y comprobamos si los campos son correctos.
                                     El botón estará deshabilitado hasta que todos los elemento tengan algo escrito dentro -->
-                                    
-                                     <button type="submit" class="btn btn-success btn-lg" @click="guardarContacto" @keyup.enter="guardarContacto" >Añadir</button>
+                                    <button type="button" class="btn btn-success btn-lg"
+                                    @click="guardarContacto" @keyup.enter="guardarContacto">Añadir</button>
                                 </div>
                             </div>
                         </form>
@@ -195,7 +195,7 @@
     <!-- aquí termina el div de agendaVue -->
     </div>
 
-    <section id="redesSociales">
+     <section id="redesSociales">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -330,21 +330,18 @@
                         name: this.name,
                         email: this.email,
                         phone: this.phone
-
                     }).then( ()=> this.$mount())
 
-                    this.name=null;
-                    this.email=null;
-                    this.phone=null;
+                    this.name='';
+                    this.email='';
+                    this.phone='';
                     
                 },
-                eliminarContacto(index){
+                borrarContacto(index){
                     /* el splice lo que te hace es pillar el elemento que quieras de array y le especificas en el
                     segundo parámetro cuántos quieres eliminar, en este caso, solo el seleccionado, es decir 1. */
                     colecion.doc(index).delete().then( () => this.$mount())
                 }
-
-               
             }
         })
     </script>
