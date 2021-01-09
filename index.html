@@ -84,7 +84,7 @@
             </div>
         </div>
     </header>
-    <div id="agendaVue">
+    <div id="AppagendaVue">
         <!-- Contactos Grid Section -->
         <section id="contactos">
             <div class="container">
@@ -114,13 +114,13 @@
                         diferencie los nodos del DOM -->
                     <div class="row" v-for="item in contacts" v-bind:key="item.id">
                         <div class="col-xs-4">
-                            <p>{{item.data.name}}</p>
+                            <p>{{item.data.nombre}}</p>
                         </div>
                         <div class="col-xs-4">
                             <p>{{item.data.email}}</p>
                         </div>
                         <div class="col-xs-3">
-                            <p>{{item.data.phone}}</p>
+                            <p>{{item.data.telefono}}</p>
                         </div>
                         <div class="col-xs-1">
                             <button class="btn btn-danger btn-sm" @click="borrarContacto(item.id)">
@@ -156,7 +156,7 @@
                                     <!-- hacemos que se asocie lo introducido por el usuario a uno de los campos del objeto que
                                     se crea en vue -->
                                     <input type="text" class="form-control" placeholder="Nombre" id="name" 
-                                    v-model="name">
+                                    v-model="nombre">
                                     <p class="help-block text-danger"></p>
                                 </div>
                             </div>
@@ -171,8 +171,8 @@
                             <div class="row control-group">
                                 <div class="form-group col-xs-12 floating-label-form-group controls">
                                     <label>Teléfono</label>
-                                    <input type="tel" class="form-control" placeholder="Número de teléfono" id="phone"
-                                    v-model="phone">
+                                    <input type="tel" class="form-control" placeholder="Teléfono" id="phone"
+                                    v-model="telefono">
                                     <p class="help-block text-danger"></p>
                                 </div>
                             </div>
@@ -302,45 +302,43 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-    /*   const db = firebase.initializeApp({ projectId: 'pueba-ingenieria-web' }).firestore(); */
-        const colecion = db.collection('users');
+    
+        const coleccion = db.collection('users');
     
   
 
         var agendaVue = new Vue({
-            el: '#agendaVue',
+            el: '#AppagendaVue',
             data:{
-                    /* newContact: { name: '', email: '', phone: ''}, */
-                    name: null, 
+                   
+                    nombre: null, 
                     email: null, 
-                    phone: null,
+                    telefono: null,
                     contacts:[]
             },
 
             mounted(){
                 this.contacts= []
-                colecion.get().then( (r) => r.docs.map( (item) => this.contacts.push({id:item.id, data:item.data()})))
+                coleccion.get().then( (r) => r.docs.map( (item) => this.contacts.push({id:item.id, data:item.data()})))
             },
 
             methods:{
                 guardarContacto(){
-                    /* con la siguiente línea hacemos que una vez hayamos metido el contacto, se limpie la vista para
-                    el usuario */
-                    colecion.add({
-                        name: this.name,
+                  
+                    coleccion.add({
+                        nombre: this.nombre,
                         email: this.email,
-                        phone: this.phone
+                        telefono: this.telefono
                     }).then( ()=> this.$mount())
 
-                    this.name='';
+                    this.nombre='';
                     this.email='';
-                    this.phone='';
+                    this.telefono='';
                     
                 },
                 borrarContacto(index){
-                    /* el splice lo que te hace es pillar el elemento que quieras de array y le especificas en el
-                    segundo parámetro cuántos quieres eliminar, en este caso, solo el seleccionado, es decir 1. */
-                    colecion.doc(index).delete().then( () => this.$mount())
+                  
+                    coleccion.doc(index).delete().then( () => this.$mount())
                 }
             }
         })
